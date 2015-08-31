@@ -14,6 +14,7 @@ import  sys
 sys.dont_write_bytecode = True
 from lib import *
 from nasa93 import *
+from effort import *
 
 """
 
@@ -169,7 +170,7 @@ def where2(m, data, lvl=0, up=None):
   def tooDeep(): return lvl > The.what.depthMax
   def tooFew() : return len(data) < The.what.minSize
   def show(suffix): 
-    if The.verbose: 
+    if The.what.verbose:
       print(The.what.b4*lvl,len(data),
             suffix,' ; ',id(node) % 1000,sep='')
   if tooDeep() or tooFew():
@@ -215,10 +216,10 @@ the other, then ignore the other pole.
 def maybePrune(m,lvl,west,east):
   "Usually, go left then right, unless dominated."
   goLeft, goRight = True,True # default
-  if  The.prune and lvl >= The.what.depthMin:
+  if  The.what.prune and lvl >= The.what.depthMin:
     sw = scores(m, west)
     se = scores(m, east)
-    if abs(sw - se) > The.wriggle: # big enough to consider
+    if abs(sw - se) > The.what.wriggle: # big enough to consider
       if se > sw: goLeft   = False   # no left
       if sw > se: goRight  = False   # no right
   return goLeft, goRight
@@ -366,8 +367,8 @@ def _distances(m=nasa93):
 ### A Demo for  Where2.
 
 """
-@go
-def _where(m=nasa93):
+# @go
+def _where(m=coc81.coc81):
   m= m()
   seed(1)
   told=N()
@@ -377,7 +378,7 @@ def _where(m=nasa93):
   global The
   The=defaults().update(verbose = True,
                minSize = len(m._rows)**0.5,
-               prune   = False,
+               prune   = True,
                wriggle = 0.3*told.sd())
   tree = where2(m, m._rows)
   n=0
@@ -394,3 +395,25 @@ def _where(m=nasa93):
   for node,_ in leaves(tree):
     print(filter(node), 
           [x for x in around(node,filter)])
+
+
+"""
+
+### call WHERE with tuning
+
+"""
+
+def callWhere(m = nasa93.nasa93):
+  # m= m()
+  seed(1)
+  told=N()
+  for r in m._rows:
+    s =  scores(m,r)
+    told += s
+  global The
+  The = defaults()
+  tree = where2(m,m._rows)
+
+#
+# if __name__ == "__main__":
+#   callWhere()

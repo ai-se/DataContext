@@ -263,7 +263,7 @@ def data(indep=[], less=[], more=[], _rows=[]):
                 for r in _rows],
        names = indep+less+more)
   m.decisions  = [x for x in range(nindep)]
-  m.objectives = [nindep+ x- 1 for x in range(ndep)]
+  m.objectives = [nindep+ x-1 for x in range(ndep)]
   m.cols       = m.decisions + m.objectives
   for x in m.decisions : 
     m.w[x]=  1

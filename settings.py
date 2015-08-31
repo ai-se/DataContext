@@ -70,7 +70,7 @@ def defaults(**d):
              wriggle = 0.2,    # min difference of 'better'
              prune   = True,   # pruning enabled?
              b4      = '|.. ', # indent string
-             verbose = False,  # show trace info?
+             verbose = True,  # show trace info?
              goal    = lambda m,x : scores(m,x)
              ),
       seed    = 1,
