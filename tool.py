@@ -1,12 +1,46 @@
 from __future__ import division, print_function
-import sys
-from lib import *
-from where2 import *
-from effort import *
 from os import listdir
 from os.path import isfile, join
-import pdb
 
+# from where2 import *
+from effort import *
+
+"""
+class to hold global variables.
+
+"""
+
+
+class o:
+  def __init__(i,**d): i.__dict__.update(d)
+  def update(i,**d) : i.__dict__.update(d); return i
+  def __repr__(i)   :
+    show=[':%s %s' % (k,i.__dict__[k])
+      for k in sorted(i.__dict__.keys() )
+      if k[0] is not "_"]
+    txt = ' '.join(show)
+    if len(txt) > 60:
+      show=map(lambda x: '\t'+x+'\n',show)
+    return '{'+' '.join(show)+'}'
+
+
+
+
+def setp():
+  return o(what = o(
+             minSize  = 4,    # min leaf size
+             depthMin= 2,      # no pruning till this depth
+             depthMax= 10,     # max tree depth
+             wriggle = 0.2,    # min difference of 'better'
+             prune   = True,   # pruning enabled?
+             b4      = '|.. ', # indent string
+             verbose = True  # show trace info?
+             # goal    = lambda m,x : scores(m,x)
+             ),
+        seed = 1,
+        cache = o(size = 128),
+        option = o(tunedobjective = 1)
+        )
 
 def csv2py(src):
   f = open(src, "r")
@@ -47,9 +81,10 @@ def effortModel(src="./effort"):
                   "kemerer": kemerer.kemerer(), "kitchenham": kitchenham.kitchenham(), "maxwell": maxwell.maxwell(),
                   "miyazaki": miyazaki.miyazaki(), "Mystery1": Mystery1.Mystery1(), "Mystery2": Mystery2.Mystery2(),
                   "nasa93": nasa93.nasa93(), "telecom": telecom.telecom(), "usp05": usp05.usp05()}
-  #pdb.set_trace()
+  # pdb.set_trace()
   return effort_model
 
+The = setp()
 
 if __name__ == "__main__":
   # defectModel()
