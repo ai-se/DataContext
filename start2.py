@@ -77,7 +77,7 @@ def writefile(s):
 
 def run():
   model= Where("a","b","c")
-  model.optimizer()
+  # model.optimizer()
 
   print(The)
   print("Done!")

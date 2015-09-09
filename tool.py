@@ -1,4 +1,4 @@
-from __future__ import division, print_function
+from __future__ import division
 from os import listdir
 from os.path import isfile, join
 
@@ -12,35 +12,95 @@ class to hold global variables.
 
 
 class o:
-  def __init__(i,**d): i.__dict__.update(d)
-  def update(i,**d) : i.__dict__.update(d); return i
-  def __repr__(i)   :
-    show=[':%s %s' % (k,i.__dict__[k])
-      for k in sorted(i.__dict__.keys() )
-      if k[0] is not "_"]
+  def __init__(i, **d): i.__dict__.update(d)
+
+  def update(i, **d): i.__dict__.update(d); return i
+
+  def __repr__(i):
+    show = [':%s %s' % (k, i.__dict__[k]) for k in sorted(i.__dict__.keys()) if k[0] is not "_"]
     txt = ' '.join(show)
     if len(txt) > 60:
-      show=map(lambda x: '\t'+x+'\n',show)
-    return '{'+' '.join(show)+'}'
+      show = map(lambda x: '\t' + x + '\n', show)
+    return '{' + ' '.join(show) + '}'
+
+
+"""
+ pd, pf, prec, f, g
+
+"""
+
+
+def abcd(actual_lst, pred_lst):
+  n = lambda x: int(x)
+  p = lambda x: int(x * 100)
+  def getLabel():
+    label = []
+    for i in actual_lst:
+      if i not in label:
+        label.append(i)
+    return label
+
+  def getABCD(label):
+    for actual, predict in zip(actual_lst, pred_lst):
+      for i in label:
+        if actual == i:
+          if actual == predict:
+            D[i] = D.get(i, 0) + 1
+          else:
+            B[i] = B.get(i, 0) + 1
+        else:
+          if predict == i:
+            C[i] = C.get(i, 0) + 1
+          else:
+            A[i] = A.get(i, 0) + 1
+    return A, B, C,D
+
+  def score(label, show = False):
+    out = {}
+    for i in label:
+      pd = pf = prec = f = g = acc = 0
+      a = A.get(i,0);b = B.get(i,0);c = C.get(i,0);d = D.get(i,0)
+      if b + d: pd = d / (b + d)
+      if a + c: pf = c / (a + c)
+      if c + d: prec = d / (c + d)
+      if prec + pd: f = 2 * pd * prec / (pd + prec)
+      if pd + 1 - pf: g = 2 * pd * (1 - pf) / (1 - pf + pd)
+      if a + b + c + d: acc = (a + d) / (a + b + c + d)
+      if show:
+        print "#", (
+        '{0:20s}{1:10s} {2:4d} {3:4d} {4:4d} ' +
+        '{5:4d} {6:4d} {7:4d} {8:3d} {9:3d} ' +
+        '{10:3d} {11:3d} {12:3d} {''13:10s}').format(
+        "hello","test", n(b + d), n(a), n(b), n(c),
+        n(d), p(acc), p(pd), p(pf), p(prec), p(f), p(g), i)
+      out[i]=[p(pd), p(pf), p(prec), p(f), p(g)]
+    return out
+
+
+
+  A = {}; B ={}; C ={}; D = {}
+  labels = getLabel()
+  A,B,C,D = getABCD(labels)
+  print score(labels)
+
+
 
 
 
 
 def setp():
-  return o(what = o(
-             minSize  = 4,    # min leaf size
-             depthMin= 2,      # no pruning till this depth
-             depthMax= 10,     # max tree depth
-             wriggle = 0.2,    # min difference of 'better'
-             prune   = True,   # pruning enabled?
-             b4      = '|.. ', # indent string
-             verbose = True  # show trace info?
-             # goal    = lambda m,x : scores(m,x)
-             ),
-        seed = 1,
-        cache = o(size = 128),
-        option = o(tunedobjective = 1)
-        )
+  return o(what=o(minSize=4,  # min leaf size
+                  depthMin=2,  # no pruning till this depth
+                  depthMax=10,  # max tree depth
+                  wriggle=0.2,  # min difference of 'better'
+                  prune=True,  # pruning enabled?
+                  b4='|.. ',  # indent string
+                  verbose=True,  # show trace info?
+                  goal=lambda m, x: scores(m, x)),
+             seed=1,
+             cache=o(size=128),
+             option=o(tunedobjective=1))
+
 
 def csv2py(src):
   f = open(src, "r")
@@ -84,11 +144,22 @@ def effortModel(src="./effort"):
   # pdb.set_trace()
   return effort_model
 
+
 The = setp()
 
+
+def _Abcd():
+  import random
+  train = ["Non-Def","Def","Non-Def","Def","Non-Def","Non-Def","Def","Non-Def","Non-Def","Def","Non-Def"]
+  test = train[:]
+  random.shuffle(test)
+  abcd(train, test)
+
+
 if __name__ == "__main__":
+  _Abcd()
   # defectModel()
-  effortModel()
+  # effortModel()
   # x= csv2py("./defect/ant/ant-1.3.csv")
   # callWhere(x)
   # print(x, sep="\n=====\n")
