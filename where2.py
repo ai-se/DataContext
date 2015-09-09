@@ -14,7 +14,7 @@ import  sys
 sys.dont_write_bytecode = True
 from lib import *
 from nasa93 import *
-from effort import *
+from tool import *
 
 """
 
@@ -404,15 +404,12 @@ def _where(m=coc81.coc81):
 """
 
 def callWhere(m = nasa93.nasa93):
-  # m= m()
-  seed(1)
-  told=N()
-  for r in m._rows:
-    s =  scores(m,r)
-    told += s
+  m= m()
   global The
-  The = defaults()
+  if The is None:
+    The = setp()
   tree = where2(m,m._rows)
+  return tree
 
 #
 # if __name__ == "__main__":
