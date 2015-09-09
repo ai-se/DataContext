@@ -20,7 +20,7 @@ class DeBase(object):
     # i.obj = 2  ### need to change this to the above line after done!
     i.evaluation = 0
     i.scores = {}
-    i.frontier = [i.generate() for _ in xrange(i.np)]
+    i.frontier = [i.generate() for _ in range(i.np)]
     i.evaluate()
     i.bestconf, i.bestscore = i.best()
 
@@ -98,7 +98,7 @@ class DeBase(object):
   def update(i, n, old):
     newf = []
     a, b, c = i.gen3(n, old)
-    for k in xrange(len(old)):
+    for k in range(len(old)):
       if isinstance(i.limit_min[k], bool):
         newf.append(old[k] if i.cr < random.random() else not old[k])
       elif isinstance(i.limit_min[k], list):
@@ -113,7 +113,7 @@ class DeBase(object):
     def isBetter(new, old):
       return new < old if i.obj == 1 else new > old
 
-    for k in xrange(i.repeats):
+    for k in range(i.repeats):
       if i.life <= 0:
         break
       nextgeneration = []
