@@ -1,9 +1,11 @@
 from __future__ import division
 from os import listdir
 from os.path import isfile, join
-
 # from where2 import *
 from effort import *
+from lib import *
+import pdb
+
 
 """
 class to hold global variables.
@@ -76,16 +78,10 @@ def abcd(actual_lst, pred_lst):
       out[i]=[p(pd), p(pf), p(prec), p(f), p(g)]
     return out
 
-
-
   A = {}; B ={}; C ={}; D = {}
   labels = getLabel()
   A,B,C,D = getABCD(labels)
-  print score(labels)
-
-
-
-
+  return score(labels)
 
 
 def setp():
@@ -95,11 +91,18 @@ def setp():
                   wriggle=0.2,  # min difference of 'better'
                   prune=True,  # pruning enabled?
                   b4='|.. ',  # indent string
-                  verbose=True,  # show trace info?
+                  verbose=False,  # show trace info?
                   goal=lambda m, x: scores(m, x)),
              seed=1,
              cache=o(size=128),
-             option=o(tunedobjective=1))
+             option=o(tunedobjective=1,
+                      tuning = False,
+                      threshold = 0.5,
+                      mean = True,
+                      resultname = ""
+                      ),
+             data=o(train = None,
+                    predict = None))
 
 
 def csv2py(src):

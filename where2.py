@@ -26,10 +26,14 @@ twp distant points. Divide that data at the median of those projects.
 """
 def fastmap(m,data):
   "Divide data into two using distance to two distant items."
-  one  = any(data)             # 1) pick anything
-  west = furthest(m,one,data)  # 2) west is as far as you can go from anything
-  east = furthest(m,west,data) # 3) east is as far as you can go from west
-  c    = dist(m,west,east)
+  # one  = any(data)             # 1) pick anything
+  # west = furthest(m,one,data)  # 2) west is as far as you can go from anything
+  # east = furthest(m,west,data) # 3) east is as far as you can go from west
+  # c    = dist(m,west,east)
+  pair = allfurthest(m,data)
+  west = pair[0]
+  east = pair[1]
+  c = pair[2]
   # now find everyone's distance
   lst = []
   for one in data:
@@ -43,6 +47,23 @@ def fastmap(m,data):
   wests = map(second,lst[:mid])
   easts = map(second,lst[mid:])
   return wests,west, easts,east,c
+
+
+"""
+Find the furthest pair in all pairs!NO RANDOM!!
+
+"""
+def allfurthest(m, data):
+  # temp = -10**10 # if it was 0, will casue "NoneType pair" error
+  temp = -10**10
+  furthestpair = None
+  for i in data:
+    for j in data:
+      c = dist(m, i,j)
+      if c > temp:
+        temp = c
+        furthestpair =[i,j,c]
+  return furthestpair
 """
 
 In the above:
@@ -403,13 +424,121 @@ def _where(m=coc81.coc81):
 
 """
 
-def callWhere(m = nasa93.nasa93):
-  m= m()
+def callWhere():
+
   global The
+  train = The.data.train
+
   if The is None:
     The = setp()
-  tree = where2(m,m._rows)
-  return tree
+  tree = where2(train,train._rows)
+  actual,predicted = predictWhere(tree)
+  score = abcd(actual,predicted)
+  return score
+
+
+def predictWhere(tree):
+  # apex=  leaf at end of biggest (most supported)
+  # branch that is selected by test in a tree
+  def nodes(tree):
+    if tree:
+      yield tree
+      for kid in tree._kids:
+        for sub in nodes(kid):
+          yield sub
+
+  def leaves(tree):
+    out = []
+    for node in nodes(tree):
+      if not node._kids:
+        out.append(node)
+    return out
+
+  def predict(cluster_lst):
+    scores = sorted([i[test.objectives[0]] for i in cluster_lst])  # if have many objectives, only use the fist one!
+    if The.option.mean:
+      return float(sum(scores) / len(cluster_lst))
+    else:
+      index = int(len(cluster_lst) / 2)
+      return scores[index]
+
+  def goCluster(leaves):
+    result = []
+    for row in test._rows:
+      temp = 10**5
+      temp_cluster = None
+      for leave in leaves:
+        dist_east = dist(test, row, leave._up.east)
+        dist_west = dist(test, row, leave._up.west)
+        if dist_east < dist_west and dist_east < temp:
+          if leave._up.east.cells in [a.cells for a in leave.val]:
+            temp = dist_east
+            temp_cluster = [a.cells for a in leave.val]
+        if dist_west < dist_east and dist_west < temp:
+          if leave._up.west.cells in [a.cells for a in leave.val]:
+            temp = dist_west
+            temp_cluster = [a.cells for a in leave.val]
+      result.append(predict(temp_cluster))
+    return result
+
+  def tell(test_rows, predicted):
+    txt_actual = []
+    txt_predicted = []
+    actual = [i.cells[test.objectives[0]] for i in test_rows]
+    for act, pre in zip(actual, predicted):
+      if act > 0:
+        txt_actual.append("Def")
+      else:
+        txt_actual.append("Non-Def")
+      if pre > The.option.threshold:
+        txt_predicted.append("Def")
+      else:
+        txt_predicted.append("Non-Def")
+    return txt_actual, txt_predicted
+  global The
+  test = The.data.predict
+  myleaves = leaves(tree)
+  predicted = goCluster(myleaves)
+  return tell(test._rows, predicted)
+
+
+
+
+
+
+#
+
+
+"""
+def apex(test,tree,opt=The.tree):
+  apex=  leaf at end of biggest (most supported)
+  branch that is selected by test in a tree
+  def equals(val,span):
+    if val == opt.missing or val==span:
+      return True
+    else:
+      if isinstance(span,tuple):
+        lo,hi = span
+        return lo <= val <= hi
+      else:
+        return span == val
+  def apex1(cells,tree):
+    found = False
+    for kid in tree.kids:
+      val = cells[kid.f.col]
+      if equals(val,kid.val):
+        for leaf in apex1(cells,kid):
+          found = True
+          yield leaf
+    if not found:
+      yield tree
+  leaves= [(len(leaf.rows),leaf)
+           for leaf in apex1(opt.cells(test),tree)]
+  # a = leaves
+  # b = sorted(a)
+  # c =last(b)
+  return second(last(sorted(leaves)))
+"""
 
 #
 # if __name__ == "__main__":
