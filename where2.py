@@ -39,7 +39,7 @@ def fastmap(m,data):
   for one in data:
     a = dist(m,one,west)
     b = dist(m,one,east)
-    x = (a*a + c*c - b*b)/(2*c) # cosine rule
+    x = (a*a + c*c - b*b)/(2*c+0.00001) # cosine rule
     y = max(0, a**2 - x**2)**0.5 # not used, here for a demo
     lst  += [(x,one)]
   lst   = sorted(lst)

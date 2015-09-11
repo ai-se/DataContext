@@ -44,13 +44,13 @@ class Learner(object):
 class Where(Learner):
   def __init__(i, train, tune, predict):
     super(Where, i).__init__(train, tune, predict)
-    i.tunelst = ["The.what.threshold", "The.what.wriggle",
+    i.tunelst = ["The.option.threshold", "The.what.wriggle",
                  "The.what.depthMax", "The.what.depthMin", "The.what.minSize", "The.what.prune"]
     i.tune_min = [0.01, 0.01, 1, 1, 1, False]
     i.tune_max = [1, 1, 20, 6, 20, False]
 
   def default(i):
-    The.what.threshold = 0.5
+    The.threshold.threshold = 0.5
     The.what.wriggle = 0.2
     The.what.depthMax = 10
     The.what.depthMin = 2
@@ -92,8 +92,8 @@ def start(path="./defect"):
     NDef = learner + ": N-Def"
     YDef = learner + ": Y-Def"
     for j, s in enumerate(lst):
-      s[NDef] = s.get(NDef, []) + [(float(score['Non-Def'][j] / 100))]
-      s[YDef] = s.get(YDef, []) + [(float(score['Def'][j] / 100))]  # [YDef] will void to use myrdiv.
+      s[NDef] = s.get(NDef, []) + [(float(score[0][j] / 100))]
+      s[YDef] = s.get(YDef, []) + [(float(score[1][j] / 100))]  # [YDef] will void to use myrdiv.
 
   def printResult(dataname):
     def myrdiv(d):
@@ -112,12 +112,12 @@ def start(path="./defect"):
     print("\n")
 
   global The
-  The.option.tunedobjective = 3  # 0->pd, 1->pf,2->prec, 3->f, 4->g
+  The.option.tunedobjective = 0  # 0->pd, 1->pf,2->prec, 3->f, 4->g
   objectives = {0: "pd", 1: "pf", 2: "prec", 3: "f", 4: "g"}
   createfile(objectives[The.option.tunedobjective])
   folders = [f for f in listdir(path) if not isfile(join(path, f))]
   allModels =defectModel()
-  for folder in folders[2:3]:
+  for folder in folders[:]:
     nextpath = join(path, folder)
     data = [join(nextpath, f) for f in listdir(nextpath) if isfile(join(nextpath, f))]
     for i in range(len(data)):
@@ -129,7 +129,6 @@ def start(path="./defect"):
         predict = allModels[folder][i + 2]
         tune = allModels[folder][i + 1]
         train = allModels[folder][i]
-        pdb.set_trace()
       except IndexError as e:
         print(folder + "done!")
         break

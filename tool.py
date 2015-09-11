@@ -58,8 +58,8 @@ def abcd(actual_lst, pred_lst):
     return A, B, C,D
 
   def score(label, show = False):
-    out = {}
-    for i in label:
+    out = []
+    for i in ["Non-Def","Def"]:
       pd = pf = prec = f = g = acc = 0
       a = A.get(i,0);b = B.get(i,0);c = C.get(i,0);d = D.get(i,0)
       if b + d: pd = d / (b + d)
@@ -75,7 +75,7 @@ def abcd(actual_lst, pred_lst):
         '{10:3d} {11:3d} {12:3d} {''13:10s}').format(
         "hello","test", n(b + d), n(a), n(b), n(c),
         n(d), p(acc), p(pd), p(pf), p(prec), p(f), p(g), i)
-      out[i]=[p(pd), p(pf), p(prec), p(f), p(g)]
+      out+=[[p(pd), p(pf), p(prec), p(f), p(g)]]
     return out
 
   A = {}; B ={}; C ={}; D = {}
@@ -89,7 +89,7 @@ def setp():
                   depthMin=2,  # no pruning till this depth
                   depthMax=10,  # max tree depth
                   wriggle=0.2,  # min difference of 'better'
-                  prune=True,  # pruning enabled?
+                  prune=False,  # pruning enabled?
                   b4='|.. ',  # indent string
                   verbose=False,  # show trace info?
                   goal=lambda m, x: scores(m, x)),

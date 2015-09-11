@@ -156,7 +156,7 @@ class WhereDE(DeBase):
     return lst
 
   def callModel(i):
-    return callWhere()['Def']
+    return callWhere()[-1]
 
 
 if __name__ == "__main__":
